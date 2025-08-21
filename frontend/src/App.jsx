@@ -1,35 +1,24 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import Navbar from "./components/Navbar";
+import StoryAssistant from "./components/StoryAssistant";
+import BacklogAssistant from "./components/BacklogAssistant";
+import EstimationAssistant from "./components/EstimationAssistant";
+import PrioritizationAssistant from "./components/PrioritizationAssistant";
+import RetrospectiveAssistant from "./components/RetrospectiveAssistant";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [activeTab, setActiveTab] = useState("Story");
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="min-h-screen bg-gray-100">
+      <Navbar setActiveTab={setActiveTab} />
+      <div className="max-w-4xl mx-auto mt-6 bg-white rounded-xl shadow-lg p-6">
+        {activeTab === "Story" && <StoryAssistant />}
+        {activeTab === "Backlog" && <BacklogAssistant />}
+        {activeTab === "Estimation" && <EstimationAssistant />}
+        {activeTab === "Prioritization" && <PrioritizationAssistant />}
+        {activeTab === "Retrospective" && <RetrospectiveAssistant />}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
-
-export default App
