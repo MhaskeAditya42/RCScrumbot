@@ -1,15 +1,14 @@
-
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends, Request
 from app.models.story_model import StoryRequest, StoryResponse
 from app.services.gemini_service import GeminiService
 from app.services.jira_service import JiraService
+from app.services.auth_service import get_jira_token
 
 router = APIRouter()
 gemini = GeminiService()
-jira = JiraService()
 
 @router.post("/", response_model=StoryResponse)
-def story_analyzer(req: StoryRequest):
+def story_analyzer(req: StoryRequest, request: Request):
     """
     Generates a Jira-style user story from a task/requirement.
     Optionally creates it as a Story in Jira when create_in_jira=True.
@@ -25,7 +24,7 @@ def story_analyzer(req: StoryRequest):
     data = gemini.gen_json(prompt, schema_hint)
 
     if "_error" in data:
-        # fallback if Gemini fails
+        # Fallback if Gemini fails
         user_story = f"User story for task: {req.task}"
         acceptance = []
     else:
@@ -36,9 +35,19 @@ def story_analyzer(req: StoryRequest):
     if req.create_in_jira:
         description = user_story + "\n\nAcceptance Criteria:\n- " + "\n- ".join(acceptance) if acceptance else user_story
         try:
-            created = jira.create_issue(summary=user_story, description=description, issue_type="Story")
+            # Initialize JiraService without token to force Basic Auth
+            jira = JiraService()
+            created = jira.create_issue(
+                summary=user_story,
+                description=description,
+                issue_type="Story"
+            )
             issue_key = created.get("key")
         except Exception as e:
-            raise HTTPException(status_code=502, detail=f"Jira create failed: {e}")
+            raise HTTPException(status_code=502, detail=f"Jira create failed: {str(e)}")
 
-    return StoryResponse(user_story=user_story, acceptance_criteria=acceptance, jira_issue_key=issue_key)
+    return StoryResponse(
+        user_story=user_story,
+        acceptance_criteria=acceptance,
+        jira_issue_key=issue_key
+    )
