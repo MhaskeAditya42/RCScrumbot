@@ -4,6 +4,7 @@ from typing import List, Optional
 class GroomingRequest(BaseModel):
     jql_filter: Optional[str] = None
     items: Optional[List[str]] = None  # fallback if not pulling from Jira
+    use_jira: bool = False   # <-- new flag
 
 class GroomingResponse(BaseModel):
     refined_backlog: list  # list of dicts {item, category, notes?}

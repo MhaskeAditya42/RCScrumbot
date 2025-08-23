@@ -15,6 +15,8 @@ import StoryAssistant from "./components/StoryAssistant";
 import BacklogAssistant from "./components/BacklogAssistant";
 import EstimationAssistant from "./components/EstimationAssistant";
 import RetrospectiveAssistant from "./components/RetrospectiveAssistant";
+import PrioritizationAssistant from "./components/PrioritizationAssistant";
+
 
 const theme = createTheme({
   palette: {
@@ -63,6 +65,14 @@ export default function App() {
         "Reflect on your sprint, gather feedback, and identify improvements to help your team grow.",
       gradient: "linear-gradient(135deg, #da22ff 0%, #9733ee 100%)",
       component: <RetrospectiveAssistant />,
+    },
+    {
+      key: "prioritization",
+      title: "Prioritization",
+      description:
+        "Rank tasks and stories based on value, urgency, and effort to maximize delivery impact.",
+      gradient: "linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%)", // 🔶 Orange gradient
+      component: <PrioritizationAssistant />, // <-- make sure you import this
     },
   ];
 

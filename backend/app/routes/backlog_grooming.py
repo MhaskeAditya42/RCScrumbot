@@ -9,17 +9,13 @@ jira = JiraService()
 
 @router.post("/", response_model=GroomingResponse)
 def backlog_grooming(req: GroomingRequest):
-    """
-    Pulls backlog from Jira (or uses provided items), asks Gemini to:
-    - categorize items (feature/bug/improvement)
-    - detect duplicates
-    - suggest dependencies or splits
-    """
     try:
-        if req.items:
+        if req.use_jira:
+            items = jira.fetch_backlog(jql_filter=req.jql_filter)
+        elif req.items:
             items = [{"summary": s} for s in req.items]
         else:
-            items = jira.fetch_backlog(jql_filter=req.jql_filter)
+            raise HTTPException(status_code=400, detail="No items provided and use_jira not set")
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Jira fetch failed: {e}")
 
@@ -40,7 +36,6 @@ def backlog_grooming(req: GroomingRequest):
     data = gemini.gen_json(prompt, schema_hint)
 
     if "_error" in data:
-        # Minimal fallback
         refined = [{"item": s, "category": "feature", "note": ""} for s in summaries]
         return GroomingResponse(refined_backlog=refined, duplicates=[], dependencies=[])
 

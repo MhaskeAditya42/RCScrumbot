@@ -27,6 +27,11 @@ export default function BacklogAssistant() {
     setResult(res.data);
   };
 
+  const handleFetchFromJira = async () => {
+    const res = await groomBacklog({ use_jira: true });
+    setResult(res.data);
+  };
+
   return (
     <Box
       sx={{
@@ -103,6 +108,23 @@ export default function BacklogAssistant() {
                   },
                 }}
               />
+
+              <Button
+                type="button"
+                variant="outlined"
+                size="large"
+                sx={{
+                  borderRadius: 2,
+                  fontWeight: 600,
+                  borderColor: "#58A6FF",
+                  color: "#58A6FF",
+                  "&:hover": { borderColor: "#1f6feb", bgcolor: "#161B22" },
+                }}
+                onClick={handleFetchFromJira}
+              >
+                Fetch Backlog from Jira
+              </Button>
+
 
               <Button
                 type="submit"

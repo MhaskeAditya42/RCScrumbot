@@ -146,6 +146,7 @@ class JiraService:
         self._raise_for_jira(r)
         return {"updated": True}
 
+
     def fetch_backlog(self, jql_filter: Optional[str] = None) -> List[Dict]:
         jql = (
             jql_filter
@@ -166,3 +167,43 @@ class JiraService:
                 }
             )
         return items
+    
+    def get_issue(self, issue_key: str, fields: Optional[List[str]] = None) -> Dict:
+        params = {}
+        if fields:
+            params["fields"] = ",".join(fields)
+        r = self._request("GET", f"issue/{issue_key}", params=params, timeout=30)
+        self._raise_for_jira(r)
+        return r.json()
+
+    # ---- ADF (Atlassian) -> plain text (simple)
+    def _adf_to_text(self, adf: Dict) -> str:
+        if not isinstance(adf, dict):
+            return str(adf) if adf is not None else ""
+
+        result = []
+
+        def walk(node):
+            if not isinstance(node, dict):
+                return
+            t = node.get("type")
+            if t == "text":
+                result.append(node.get("text", ""))
+            elif t in ("paragraph", "listItem"):
+                for c in node.get("content", []) or []:
+                    walk(c)
+                if t == "paragraph":
+                    result.append("\n")
+            elif t in ("bulletList", "orderedList", "doc"):
+                for c in node.get("content", []) or []:
+                    walk(c)
+            else:
+                for c in node.get("content", []) or []:
+                    walk(c)
+
+        walk(adf)
+        text = "".join(result)
+        # normalize blank lines
+        lines = [l.rstrip() for l in text.splitlines()]
+        return "\n".join(lines).strip()
+
