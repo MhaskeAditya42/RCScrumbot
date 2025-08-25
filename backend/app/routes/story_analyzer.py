@@ -58,12 +58,12 @@ def story_analyzer(req: StoryRequest, request: Request):
             else:
                 # Create a new issue in Jira
                 new_issue = jira.create_issue(
-                    project="SCRUM",
+                    project_key="SCRUM",
                     summary=user_story,
                     description="\n".join(acceptance),
-                    issuetype={"name": "Task"}
+                    issue_type="Task"
                 )
-                jira_issue_key = new_issue.key
+                jira_issue_key = new_issue["key"]
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to process Jira issue: {str(e)}")
 
