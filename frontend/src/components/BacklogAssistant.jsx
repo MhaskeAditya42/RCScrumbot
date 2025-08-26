@@ -88,7 +88,7 @@ export default function BacklogAssistant() {
           {/* Form */}
           <form onSubmit={handleSubmit}>
             <Stack spacing={3}>
-              <TextField
+              {/* <TextField
                 label="Enter tasks (one per line)"
                 placeholder="Add dark mode to UI\nFix login API error\nImprove dashboard performance"
                 multiline
@@ -124,7 +124,7 @@ export default function BacklogAssistant() {
                     opacity: 1,
                   },
                 }}
-              />
+              /> */}
 
               <Button
                 type="button"
@@ -282,6 +282,9 @@ export default function BacklogAssistant() {
           <DialogActions>
             <Button onClick={handleCloseDialog} sx={{ color: "#58A6FF" }}>
               Close
+            </Button>
+            <Button sx={{ color: "#58ff74ff" }}>
+              Update to JIRA
             </Button>
           </DialogActions>
         </Dialog>

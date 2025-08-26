@@ -124,7 +124,14 @@ class JiraService:
         self._raise_for_jira(r)
         return r.json()
 
-    def create_issue(self, summary: str, description: str, issue_type: str = "Story", project_key: Optional[str] = None) -> Dict:
+    def create_issue(
+        self,
+        summary: str,
+        description: str,
+        issue_type: str = "Story",
+        project_key: Optional[str] = None,
+        labels: Optional[list] = None,  # <-- add labels parameter
+    ) -> Dict:
         adf_description = self._adf_from_text(description)
         payload = {
             "fields": {
@@ -132,11 +139,13 @@ class JiraService:
                 "summary": summary,
                 "description": adf_description,
                 "issuetype": {"name": issue_type},
+                "labels": labels or [],  # <-- include labels in payload
             }
         }
         r = self._request("POST", "issue", json=payload, timeout=30)
         self._raise_for_jira(r)
         return r.json()
+
 
     def update_issue(self, issue_key: str, fields: Dict) -> Dict:
         if "description" in fields and isinstance(fields["description"], str):

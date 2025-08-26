@@ -1,26 +1,53 @@
-from fastapi import APIRouter
-from app.models.retrospective import RetrospectiveRequest, RetrospectiveResponse
+from fastapi import APIRouter, UploadFile, File, HTTPException
+from app.models.retrospective import RetrospectiveResponse
 from app.services.gemini_service import GeminiService
 
 router = APIRouter()
 gemini = GeminiService()
 
 @router.post("/", response_model=RetrospectiveResponse)
-def retrospective(req: RetrospectiveRequest):
+async def retrospective(file: UploadFile = File(...)):
     """
-    Summarize sprint notes and propose actionable improvements.
+    Analyze retrospective transcript file and extract insights including risks,
+    sprint notes, coaching nuggets, and detected Agile/Scrum anti-patterns.
     """
-    bullets = "\n".join(f"- {n}" for n in req.sprint_notes)
+    if not file.filename.endswith(".txt"):
+        raise HTTPException(status_code=400, detail="Only .txt files are supported")
+
+    content = await file.read()
+    transcript = content.decode("utf-8")
+
     prompt = (
-        "You are an experienced Scrum coach facilitating a retrospective. Analyze the sprint notes, which include daily scrum transcripts with mixed positive and negative feedback.\n"
-        "Provide a balanced summary, highlight what went well (positives), areas for improvement (challenges), 3-5 concrete action items to address issues, and 3-5 coaching nuggets (short, insightful tips for better Scrum practices).\n"
-        "Return JSON strictly as: {\"summary\":\"string\",\"positives\":[\"string\"],\"challenges\":[\"string\"],\"action_items\":[\"string\"],\"coaching_nuggets\":[\"string\"]}\n\n"
-        f"Notes:\n{bullets}"
+        "You are an experienced Scrum coach analyzing a sprint retrospective transcript.\n"
+        "The transcript may contain positive/negative feedback, discussions, and notes.\n"
+        "Extract insights and return STRICT JSON with these fields:\n"
+        "{"
+        "\"summary\":\"string\","
+        "\"risks\":[\"string\"],"
+        "\"sprint_notes\":[\"string\"],"
+        "\"anti_patterns\":[\"string\"],"
+        "\"coaching_nugget\":\"string\""
+        "}\n\n"
+        f"Transcript:\n{transcript}"
     )
-    schema_hint = '{"summary":"string","positives":["string"],"challenges":["string"],"action_items":["string"],"coaching_nuggets":["string"]}'
+
+    schema_hint = (
+        '{"summary":"string",'
+        '"risks":["string"],'
+        '"sprint_notes":["string"],'
+        '"anti_patterns":["string"],'
+        '"coaching_nugget":"string"}'
+    )
+
     data = gemini.gen_json(prompt, schema_hint)
 
     if "_error" in data:
-        data = {"summary": "Summary unavailable (fallback).", "positives": [], "challenges": [], "action_items": [], "coaching_nuggets": []}
+        data = {
+            "summary": "Summary unavailable (fallback).",
+            "risks": [],
+            "sprint_notes": [],
+            "anti_patterns": [],
+            "coaching_nugget": "Keep iterating and improving continuously!"
+        }
 
     return RetrospectiveResponse(**data)

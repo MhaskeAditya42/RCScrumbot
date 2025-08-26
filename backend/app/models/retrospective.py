@@ -6,4 +6,7 @@ class RetrospectiveRequest(BaseModel):
 
 class RetrospectiveResponse(BaseModel):
     summary: str
-    action_items: List[str]
+    risks: List[str]
+    sprint_notes: List[str]
+    anti_patterns: List[str]
+    coaching_nugget: str

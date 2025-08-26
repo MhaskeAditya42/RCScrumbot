@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   Typography,
-  TextField,
   Button,
   Box,
   List,
@@ -15,17 +14,24 @@ import {
 import { History } from "lucide-react";
 
 export default function RetrospectiveAssistant() {
-  const [notes, setNotes] = useState("");
+  const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const notesArray = notes
-      .split("\n")
-      .map((note) => note.trim())
-      .filter((note) => note.length > 0);
+    if (!file) return;
 
-    const res = await runRetro({ sprint_notes: notesArray });
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await runRetro(formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
     setResult(res.data);
   };
 
@@ -36,7 +42,7 @@ export default function RetrospectiveAssistant() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: "#121212", // Dark background
+        bgcolor: "#121212",
         px: 2,
       }}
     >
@@ -47,51 +53,25 @@ export default function RetrospectiveAssistant() {
           borderRadius: 4,
           boxShadow: 6,
           p: 4,
-          bgcolor: "#1E1E1E", // Darker card background
+          bgcolor: "#1E1E1E",
           border: "1px solid #333",
         }}
       >
         <CardContent>
           {/* Header */}
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="center"
-            spacing={1.5}
-            mb={4}
-          >
-            <History className="w-7 h-7 text-indigo-300" /> {/* Lighter indigo for icon */}
+          <Stack direction="row" alignItems="center" justifyContent="center" spacing={1.5} mb={4}>
+            <History className="w-7 h-7 text-indigo-300" />
             <Typography variant="h4" fontWeight={700} color="#FFFFFF">
               Retrospective Assistant
             </Typography>
           </Stack>
 
-          {/* Form */}
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{ display: "flex", flexDirection: "column", gap: 3 }}
-          >
-            <TextField
-              multiline
-              rows={6}
-              label="Enter sprint notes (one per line)"
-              placeholder="Deployment was delayed due to CI/CD issues\nTeam communication improved\nTesting took longer than expected"
-              variant="outlined"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              fullWidth
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  color: "#FFFFFF", // White text
-                  "& fieldset": { borderColor: "#555" }, // Subtle border
-                  "&:hover fieldset": { borderColor: "#888" },
-                  "&.Mui-focused fieldset": { borderColor: "#8AB4F8" }, // Light blue when focused
-                },
-                "& .MuiInputLabel-root": { color: "#BBBBBB" }, // Light gray label
-                "& .MuiInputLabel-root.Mui-focused": { color: "#8AB4F8" }, // Light blue when focused
-              }}
-            />
+          {/* File Upload */}
+          <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            <Button variant="outlined" component="label" sx={{ color: "#FFFFFF", borderColor: "#555" }}>
+              Upload Transcript (.txt)
+              <input type="file" hidden accept=".txt" onChange={handleFileChange} />
+            </Button>
 
             <Button
               type="submit"
@@ -102,63 +82,113 @@ export default function RetrospectiveAssistant() {
                 fontWeight: 600,
                 alignSelf: "center",
                 px: 5,
-                bgcolor: "#3949AB", // Indigo button
-                color: "#FFFFFF", // White text
-                "&:hover": { bgcolor: "#5C6BC0" }, // Lighter indigo on hover
-                "&:disabled": { bgcolor: "#333", color: "#666" }, // Disabled state
+                bgcolor: "#3949AB",
+                color: "#FFFFFF",
+                "&:hover": { bgcolor: "#5C6BC0" },
               }}
-              disabled={!notes.trim()}
+              disabled={!file}
             >
-              Summarize Retro
+              Analyze Retro
             </Button>
           </Box>
 
           {/* Result */}
+          {/* Result */}
           {result && (
             <Box
               mt={5}
-              p={3}
-              border="1px solid"
-              borderColor="#333" // Darker border
-              borderRadius={3}
-              bgcolor="#252525" // Slightly lighter dark background
+              display="flex"
+              flexDirection="column"
+              gap={3} // spacing between sections
+              sx={{ minHeight: "80vh" }} // increase outer box height
             >
-              <Typography
-                variant="subtitle1"
-                fontWeight={600}
-                color="#FFFFFF" // White text
-                mb={2}
+              {/* Risks Section */}
+              <Box
+                p={3}
+                borderRadius={3}
+                sx={{
+                  background: "linear-gradient(135deg, #FF6B6B, #FF8E53)", // red-orange gradient
+                }}
               >
-                Summary:
-              </Typography>
-              <Typography color="#E0E0E0" mb={3}> {/* Light gray for readability */}
-                {result.summary}
-              </Typography>
+                <Typography variant="h6" fontWeight={700} color="#FFFFFF" mb={2}>
+                  Risks
+                </Typography>
+                <List>
+                  {result.risks.map((risk, i) => (
+                    <ListItem key={i} disablePadding>
+                      <ListItemText
+                        primary={`• ${risk}`}
+                        primaryTypographyProps={{ color: "#FFFFFF" }}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
 
-              {result.action_items && result.action_items.length > 0 && (
-                <>
-                  <Typography
-                    variant="subtitle1"
-                    fontWeight={600}
-                    color="#FFFFFF" // White text
-                    mb={2}
-                  >
-                    Action Items:
-                  </Typography>
-                  <List>
-                    {result.action_items.map((item, index) => (
-                      <ListItem key={index} disablePadding>
-                        <ListItemText
-                          primary={`• ${item}`}
-                          primaryTypographyProps={{ color: "#E0E0E0" }} // Light gray
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
-                </>
-              )}
+              {/* Sprint Notes Section */}
+              <Box
+                p={3}
+                borderRadius={3}
+                sx={{
+                  background: "linear-gradient(135deg, #42A5F5, #478ED1)", // blue gradient
+                }}
+              >
+                <Typography variant="h6" fontWeight={700} color="#FFFFFF" mb={2}>
+                  Sprint Notes
+                </Typography>
+                <List>
+                  {result.sprint_notes.map((note, i) => (
+                    <ListItem key={i} disablePadding>
+                      <ListItemText
+                        primary={`• ${note}`}
+                        primaryTypographyProps={{ color: "#FFFFFF" }}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+
+              {/* Overall Sprint Track Section */}
+              <Box
+                p={3}
+                borderRadius={3}
+                sx={{
+                  background: "linear-gradient(135deg, #66BB6A, #43A047)", // green gradient
+                }}
+              >
+                <Typography variant="h6" fontWeight={700} color="#FFFFFF" mb={2}>
+                  Anti-Patterns
+                </Typography>
+                <List>
+                  {result.anti_patterns.map((note, i) => (
+                    <ListItem key={i} disablePadding>
+                      <ListItemText
+                        primary={`• ${note}`}
+                        primaryTypographyProps={{ color: "#FFFFFF" }}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+
+              {/* Coaching Nugget Section */}
+              <Box
+                p={3}
+                borderRadius={3}
+                sx={{
+                  background: "linear-gradient(135deg, #FFD54F, #FFA000)", // yellow-orange gradient
+                }}
+              >
+                <Typography variant="h6" fontWeight={700} color="#000000" mb={2}>
+                  Coaching Nugget
+                </Typography>
+                <Typography color="#000000">{result.coaching_nugget}</Typography>
+              </Box>
             </Box>
           )}
+
+
+
         </CardContent>
       </Card>
     </Box>

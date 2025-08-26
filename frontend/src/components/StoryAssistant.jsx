@@ -204,9 +204,9 @@ export default function StoryAnalyzer() {
 
       {/* Confirmation Dialog */}
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
-        <DialogTitle>Confirm Add</DialogTitle>
+        <DialogTitle sx={{color: "#e5e2e2ff"}}>Confirm Add</DialogTitle>
         <DialogContent>
-          <DialogContentText>Do you want to add this story to Jira?</DialogContentText>
+          <DialogContentText sx={{color: "#e5e2e2ff"}}>Do you want to add this story to Jira?</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setConfirmOpen(false)}>Cancel</Button>
