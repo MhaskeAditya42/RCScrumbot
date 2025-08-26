@@ -36,7 +36,7 @@ export default function App() {
   const sections = [
     {
       key: "story",
-      title: "Story Generator Assitant",
+      title: "Story Generator Assistant",
       description:
       " Transforms raw ideas or drafts into well-formed,INVEST compliant user stories.",
       gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
