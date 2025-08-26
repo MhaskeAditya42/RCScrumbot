@@ -23,15 +23,18 @@ def backlog_grooming(req: GroomingRequest):
     joined = "\n".join(f"- {s}" for s in summaries)
 
     prompt = (
-        "You are assisting with backlog grooming. Given the backlog items below, do three things:\n"
+        "You are assisting with backlog grooming. Given the backlog items below, do four things:\n"
         "1) Categorize each as feature/bug/improvement and add 1-line refinement note.\n"
-        "2) Identify likely duplicates (return pairs by index).\n"
-        "3) Suggest any dependencies as readable strings.\n\n"
+        "2) Add rationale: team discussion points, key risks, and 2-3 example test cases.\n"
+        "3) Identify likely duplicates (return pairs by index).\n"
+        "4) Suggest any dependencies as readable strings.\n\n"
         f"Backlog:\n{joined}\n\n"
         "Return ONLY strict JSON with fields: "
-        '{"refined_backlog":[{"item":"string","category":"feature|bug|improvement","note":"string"}],'
+        '{"refined_backlog":[{"item":"string","category":"feature|bug|improvement","note":"string",'
+        '"discussion":"string","risk":"string","testcases":["string"]}],'
         '"duplicates":[[int,int]], "dependencies":["string"]}'
     )
+
     schema_hint = '{"refined_backlog":[{"item":"string","category":"feature","note":"string"}],"duplicates":[[0,1]],"dependencies":["string"]}'
     data = gemini.gen_json(prompt, schema_hint)
 

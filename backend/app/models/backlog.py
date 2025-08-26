@@ -11,3 +11,10 @@ class GroomingResponse(BaseModel):
     duplicates: list       # list of pairs or keys
     dependencies: list     # textual dependency hints
 
+class RefinedItem(BaseModel):
+    item: str
+    category: str
+    note: str
+    discussion: str
+    risk: str
+    testcases: List[str]

@@ -36,9 +36,9 @@ export default function App() {
   const sections = [
     {
       key: "story",
-      title: "Story Analyzer",
+      title: "Story Generator Assitant",
       description:
-        "Quickly review and summarize your user stories, highlighting key details and improvements.",
+      " Transforms raw ideas or drafts into well-formed,INVEST compliant user stories.",
       gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       component: <StoryAssistant />,
     },
@@ -46,7 +46,7 @@ export default function App() {
       key: "backlog",
       title: "Backlog Grooming",
       description:
-        "Organize, prioritize, and refine your backlog with actionable insights for smoother sprint planning.",
+        "Effortlessly transform yout backlog into a clear,organized, and actionable plan.",
       gradient: "linear-gradient(135deg, #f7971e 0%, #ffd200 100%)",
       component: <BacklogAssistant />,
     },
@@ -58,14 +58,7 @@ export default function App() {
       gradient: "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)",
       component: <EstimationAssistant />,
     },
-    {
-      key: "retrospective",
-      title: "Retrospective",
-      description:
-        "Reflect on your sprint, gather feedback, and identify improvements to help your team grow.",
-      gradient: "linear-gradient(135deg, #da22ff 0%, #9733ee 100%)",
-      component: <RetrospectiveAssistant />,
-    },
+
     {
       key: "prioritization",
       title: "Prioritization",
@@ -74,6 +67,15 @@ export default function App() {
       gradient: "linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%)", // 🔶 Orange gradient
       component: <PrioritizationAssistant />, // <-- make sure you import this
     },
+    {
+      key: "retrospective",
+      title: "Retrospective",
+      description:
+        "Reflect on your sprint, gather feedback, and identify improvements to help your team grow.",
+      gradient: "linear-gradient(135deg, #da22ff 0%, #9733ee 100%)",
+      component: <RetrospectiveAssistant />,
+    },
+    
   ];
 
   return (
@@ -89,7 +91,8 @@ export default function App() {
                 gutterBottom
                 sx={{ fontWeight: 700, color: "#fff", textAlign: "center", mb: 4 }}
               >
-                AI-gility, Developed by GAS-IT-Pune
+                ScrumBot <br></br>
+                AI-gility: Smarter Scrum with AI
               </Typography>
 
               {/* 2x2 Grid */}

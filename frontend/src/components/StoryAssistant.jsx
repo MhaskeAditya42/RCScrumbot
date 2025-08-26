@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {
-  Box, Button, Card, CardContent, Typography, TextField, Checkbox,
-  FormControlLabel, CircularProgress, Divider, Stack, MenuItem, Select,
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+  Box, Button, Card, CardContent, Typography, TextField, CircularProgress,
+  Divider, Stack, MenuItem, Select, Dialog, DialogActions, DialogContent,
+  DialogContentText, DialogTitle, LinearProgress
 } from "@mui/material";
-import { FileText, CheckCircle2 } from "lucide-react";
+import { FileText, CheckCircle2, Info } from "lucide-react";
 
 export default function StoryAnalyzer() {
   const [task, setTask] = useState("");
@@ -50,7 +50,7 @@ export default function StoryAnalyzer() {
 
       const res = await axios.post("http://localhost:8000/story-analyzer/", {
         task: chosenTask ? chosenTask.summary : task,
-        issue_key: chosenTask ? chosenTask.key : null,  // ✅ send issue_key
+        issue_key: chosenTask ? chosenTask.key : null,
         create_in_jira: true,
       });
 
@@ -63,11 +63,10 @@ export default function StoryAnalyzer() {
     }
   };
 
-
-
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#0D1117", display: "flex", alignItems: "center", justifyContent: "center", p: 3 }}>
       <Card sx={{ maxWidth: 900, width: "100%", borderRadius: 3, boxShadow: 6 }}>
+        {/* Header */}
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", px: 3, py: 2, bgcolor: "linear-gradient(90deg, #6a11cb 0%, #2575fc 100%)", color: "white" }}>
           <Stack direction="row" alignItems="center" spacing={1}>
             <FileText className="w-6 h-6" />
@@ -86,14 +85,11 @@ export default function StoryAnalyzer() {
               mb: 3,
               bgcolor: "#161B22",
               color: "#E6EDF3",
-              "& .MuiSelect-icon": { color: "#E6EDF3" }, // dropdown arrow
+              "& .MuiSelect-icon": { color: "#E6EDF3" },
             }}
             MenuProps={{
               PaperProps: {
-                sx: {
-                  bgcolor: "#161B22",
-                  color: "#E6EDF3",
-                },
+                sx: { bgcolor: "#161B22", color: "#E6EDF3" },
               },
             }}
           >
@@ -106,7 +102,6 @@ export default function StoryAnalyzer() {
               </MenuItem>
             ))}
           </Select>
-
 
           {/* Manual task input */}
           <TextField
@@ -121,15 +116,14 @@ export default function StoryAnalyzer() {
             sx={{
               mb: 3,
               bgcolor: "#161B22",
-              "& .MuiInputBase-input": { color: "#E6EDF3" }, // text (input + textarea)
-              "& .MuiInputLabel-root": { color: "#E6EDF3" }, // label
-              "& .MuiOutlinedInput-notchedOutline": { borderColor: "#30363D" }, // border color
-              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#8B949E" }, // hover
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#58A6FF" }, // focused
-              "& .MuiInputBase-input::placeholder": { color: "#8B949E" }, // placeholder
+              "& .MuiInputBase-input": { color: "#E6EDF3" },
+              "& .MuiInputLabel-root": { color: "#E6EDF3" },
+              "& .MuiOutlinedInput-notchedOutline": { borderColor: "#30363D" },
+              "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#8B949E" },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#58A6FF" },
+              "& .MuiInputBase-input::placeholder": { color: "#8B949E" },
             }}
           />
-
 
           {/* Generate button */}
           <Button onClick={handleGenerate} disabled={loading || (!task.trim() && !selectedTask)} fullWidth variant="contained" size="large" sx={{ py: 1.5, fontWeight: 600, borderRadius: 2 }}>
@@ -142,6 +136,29 @@ export default function StoryAnalyzer() {
               <Typography variant="h6" gutterBottom fontWeight={600} color="#E6EDF3">Generated Story</Typography>
               <Typography color="#E6EDF3" sx={{ mb: 2 }}>{story.user_story}</Typography>
 
+              {/* INVEST Score */}
+              {story.investment_score !== null && (
+                <>
+                  <Divider sx={{ my: 2 }} />
+                  <Typography variant="subtitle1" fontWeight={600} color="#E6EDF3">INVEST Score</Typography>
+                  <LinearProgress
+                    variant="determinate"
+                    value={story.investment_score * 100}
+                    sx={{
+                      height: 10,
+                      borderRadius: 5,
+                      mt: 1,
+                      bgcolor: "#30363D",
+                      "& .MuiLinearProgress-bar": { bgcolor: "#58A6FF" },
+                    }}
+                  />
+                  <Typography color="#8B949E" variant="body2" mt={1}>
+                    {Math.round(story.investment_score * 100)}%
+                  </Typography>
+                </>
+              )}
+
+              {/* Acceptance Criteria */}
               {story.acceptance_criteria.length > 0 && (
                 <>
                   <Divider sx={{ my: 2 }} />
@@ -149,6 +166,19 @@ export default function StoryAnalyzer() {
                   <ul style={{ paddingLeft: "1.2rem", color: "#E6EDF3" }}>
                     {story.acceptance_criteria.map((c, idx) => (
                       <li key={idx}><Typography color="#E6EDF3">{c}</Typography></li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
+              {/* Notes */}
+              {story.notes && story.notes.length > 0 && (
+                <>
+                  <Divider sx={{ my: 2 }} />
+                  <Typography variant="subtitle1" fontWeight={600} color="#E6EDF3">Notes</Typography>
+                  <ul style={{ paddingLeft: "1.2rem", color: "#E6EDF3" }}>
+                    {story.notes.map((n, idx) => (
+                      <li key={idx}><Typography color="#E6EDF3">{n}</Typography></li>
                     ))}
                   </ul>
                 </>
@@ -164,7 +194,7 @@ export default function StoryAnalyzer() {
               {story.jira_issue_key && (
                 <Stack direction="row" alignItems="center" spacing={1} mt={2} color="success.main">
                   <CheckCircle2 className="w-5 h-5" />
-                  <Typography fontWeight={600}>Created in Jira: {story.jira_issue_key}</Typography>
+                  <Typography fontWeight={600}>Created in Jira: {story.jira_issue_key} <br></br> Label: INVEST-READY </Typography>
                 </Stack>
               )}
             </Box>

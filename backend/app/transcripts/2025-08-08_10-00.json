@@ -1,0 +1,23 @@
+{
+  "date": "2025-08-08",
+  "time": "10:00",
+  "duration_minutes": 12,
+  "participants": [
+    "Alice (PO)",
+    "Bob (Scrum Master)",
+    "Charlie (Dev)",
+    "Diana (QA)",
+    "Ethan (Dev)",
+    "Fiona (UX)"
+  ],
+  "transcript": [
+    "Bob (Scrum Master): Scrum master reminded about retrospective.",
+    "Ethan (Dev): QA reported on automated test failures.",
+    "Charlie (Dev): QA reported on automated test failures.",
+    "Fiona (UX): Scrum master reminded about retrospective.",
+    "Bob (Scrum Master): QA reported on automated test failures.",
+    "Alice (PO): QA reported on automated test failures."
+  ],
+  "processed": false,
+  "issues": []
+}

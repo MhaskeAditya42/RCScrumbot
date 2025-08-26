@@ -10,11 +10,18 @@ import {
   Button,
   Stack,
   Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 
 export default function BacklogAssistant() {
   const [tasks, setTasks] = useState("");
   const [result, setResult] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,6 +37,16 @@ export default function BacklogAssistant() {
   const handleFetchFromJira = async () => {
     const res = await groomBacklog({ use_jira: true });
     setResult(res.data);
+  };
+
+  const handleOpenDialog = (task) => {
+    setSelectedTask(task);
+    setOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpen(false);
+    setSelectedTask(null);
   };
 
   return (
@@ -125,7 +142,6 @@ export default function BacklogAssistant() {
                 Fetch Backlog from Jira
               </Button>
 
-
               <Button
                 type="submit"
                 variant="contained"
@@ -165,7 +181,11 @@ export default function BacklogAssistant() {
                       borderColor: "#30363D",
                       bgcolor: "#0D1117",
                       borderRadius: 2,
+                      cursor: "pointer",
+                      transition: "0.2s",
+                      "&:hover": { borderColor: "#58A6FF" },
                     }}
+                    onClick={() => handleOpenDialog(item)}
                   >
                     <Stack
                       direction="row"
@@ -182,7 +202,11 @@ export default function BacklogAssistant() {
                           fontWeight: 600,
                         }}
                       />
-                      <Typography variant="subtitle1" fontWeight={600} color="#E6EDF3">
+                      <Typography
+                        variant="subtitle1"
+                        fontWeight={600}
+                        color="#E6EDF3"
+                      >
                         {item.item}
                       </Typography>
                     </Stack>
@@ -204,7 +228,9 @@ export default function BacklogAssistant() {
                   </Typography>
                   <ul>
                     {result.duplicates.map((dup, i) => (
-                      <li key={i} style={{ color: "#8B949E" }}>{dup}</li>
+                      <li key={i} style={{ color: "#8B949E" }}>
+                        {dup}
+                      </li>
                     ))}
                   </ul>
                 </Box>
@@ -221,7 +247,9 @@ export default function BacklogAssistant() {
                   </Typography>
                   <ul>
                     {result.dependencies.map((dep, i) => (
-                      <li key={i} style={{ color: "#8B949E" }}>{dep}</li>
+                      <li key={i} style={{ color: "#8B949E" }}>
+                        {dep}
+                      </li>
                     ))}
                   </ul>
                 </Box>
@@ -230,6 +258,35 @@ export default function BacklogAssistant() {
           )}
         </CardContent>
       </Card>
+
+      {/* Popup Dialog */}
+      {selectedTask && (
+        <Dialog open={open} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+          <DialogTitle sx={{ color: "white" }}>{selectedTask.item}</DialogTitle>
+          <DialogContent dividers>
+            <DialogContentText
+              sx={{ whiteSpace: "pre-line", color: "white" }} 
+            >
+              <strong>Discussion:</strong> {selectedTask.discussion || "N/A"}
+              {"\n\n"}
+              <strong>Risk:</strong> {selectedTask.risk || "N/A"}
+              {"\n\n"}
+              <strong>Test Cases:</strong>
+              <ul>
+                {selectedTask.testcases?.map((tc, idx) => (
+                  <li key={idx}>{tc}</li>
+                ))}
+              </ul>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog} sx={{ color: "#58A6FF" }}>
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+
     </Box>
   );
 }

@@ -12,3 +12,6 @@ class StoryResponse(BaseModel):
     user_story: str
     acceptance_criteria: List[str] = []
     jira_issue_key: Optional[str] = None
+    notes: List[str] = []
+    investment_score: Optional[float] = None
+    invest_breakdown: Optional[dict] = None

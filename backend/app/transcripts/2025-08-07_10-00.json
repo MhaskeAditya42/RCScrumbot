@@ -1,0 +1,27 @@
+{
+  "date": "2025-08-07",
+  "time": "10:00",
+  "duration_minutes": 18,
+  "participants": [
+    "Alice (PO)",
+    "Bob (Scrum Master)",
+    "Charlie (Dev)",
+    "Diana (QA)",
+    "Ethan (Dev)",
+    "Fiona (UX)"
+  ],
+  "transcript": [
+    "Ethan (Dev): Scrum master reminded about retrospective.",
+    "Diana (QA): Scrum master reminded about retrospective.",
+    "Diana (QA): Discussed sprint goals and pending stories.",
+    "Ethan (Dev): Talked about blockers related to API integration.",
+    "Alice (PO): UI/UX team shared updates on design revisions.",
+    "Diana (QA): Scrum master reminded about retrospective.",
+    "Charlie (Dev): UI/UX team shared updates on design revisions.",
+    "Ethan (Dev): QA reported on automated test failures.",
+    "Diana (QA): PO emphasized the importance of completing backlog grooming.",
+    "Charlie (Dev): Scrum master reminded about retrospective."
+  ],
+  "processed": false,
+  "issues": []
+}

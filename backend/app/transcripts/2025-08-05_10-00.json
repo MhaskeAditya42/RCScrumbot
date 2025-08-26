@@ -1,0 +1,22 @@
+{
+  "date": "2025-08-05",
+  "time": "10:00",
+  "duration_minutes": 12,
+  "participants": [
+    "Alice (PO)",
+    "Bob (Scrum Master)",
+    "Charlie (Dev)",
+    "Diana (QA)",
+    "Ethan (Dev)",
+    "Fiona (UX)"
+  ],
+  "transcript": [
+    "Bob (Scrum Master): PO emphasized the importance of completing backlog grooming.",
+    "Fiona (UX): PO emphasized the importance of completing backlog grooming.",
+    "Bob (Scrum Master): Talked about blockers related to API integration.",
+    "Bob (Scrum Master): UI/UX team shared updates on design revisions.",
+    "Alice (PO): Discussed sprint goals and pending stories."
+  ],
+  "processed": false,
+  "issues": []
+}

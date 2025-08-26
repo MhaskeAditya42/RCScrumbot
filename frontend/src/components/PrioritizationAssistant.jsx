@@ -11,6 +11,8 @@ import {
   Stack,
   List,
   ListItem,
+  Chip,
+  Divider,
 } from "@mui/material";
 import SortIcon from "@mui/icons-material/Sort";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -49,19 +51,19 @@ export default function PrioritizationAssistant() {
     setScores(res.data.scores);
   };
 
+  const getPriorityLabel = (wsjf) => {
+    if (wsjf >= 20) return <Chip label="High" sx={{ bgcolor: "#ff4d4d", color: "#fff" }} />;
+    if (wsjf >= 10) return <Chip label="Medium" sx={{ bgcolor: "#f4c542", color: "#000" }} />;
+    return <Chip label="Low" sx={{ bgcolor: "#2ea043", color: "#fff" }} />;
+  };
+
   const inputDarkSx = {
     "& .MuiInputBase-root": {
       backgroundColor: "#2c2c3e",
       color: "#E6EDF3",
       borderRadius: 1,
     },
-    "& .MuiInputBase-input": {
-      color: "#E6EDF3",
-      // If you keep the field DISABLED, uncomment next two lines:
-      // "&.Mui-disabled": {
-      //   WebkitTextFillColor: "#E6EDF3", opacity: 1
-      // },
-    },
+    "& .MuiInputBase-input": { color: "#E6EDF3" },
     "& .MuiOutlinedInput-notchedOutline": { borderColor: "#444" },
     "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#666" },
     "& .Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#58A6FF" },
@@ -71,29 +73,45 @@ export default function PrioritizationAssistant() {
   };
 
   return (
-    <Card sx={{ borderRadius: 2, boxShadow: 6, backgroundColor: "#161B22", color: "#E6EDF3" }}>
+    <Card
+      sx={{
+        borderRadius: 3,
+        boxShadow: 8,
+        backgroundColor: "#161B22",
+        color: "#E6EDF3",
+        p: 2,
+      }}
+    >
       <CardContent>
-        <Box display="flex" alignItems="center" mb={2}>
-          <SortIcon sx={{ mr: 1, color: "#E6EDF3" }} />
-          <Typography variant="h6" fontWeight="bold" sx={{ color: "#E6EDF3" }}>
+        {/* Heading */}
+        <Box display="flex" alignItems="center" mb={3}>
+          <SortIcon sx={{ mr: 1, color: "#58A6FF" }} />
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            sx={{
+              color: "#E6EDF3",
+              borderBottom: "2px solid #58A6FF",
+              display: "inline-block",
+              pb: 0.5,
+            }}
+          >
             Prioritization Assistant
           </Typography>
         </Box>
 
+        {/* Form */}
         <form onSubmit={handleSubmit}>
           {tasks.map((task, index) => (
-            <Stack key={index} direction="row" spacing={2} mb={1} alignItems="center">
-              {/* Jira task (read-only so color applies in dark mode) */}
+            <Stack key={index} direction="row" spacing={2} mb={2} alignItems="center">
               <TextField
                 label="Task"
                 value={task.title}
                 fullWidth
-                InputProps={{ readOnly: true }} // ← use readOnly instead of disabled
-                // If you really want disabled, add: disabled
+                InputProps={{ readOnly: true }}
                 sx={inputDarkSx}
               />
 
-              {/* Value */}
               <TextField
                 label="Value"
                 type="number"
@@ -102,7 +120,6 @@ export default function PrioritizationAssistant() {
                 sx={{ width: 110, ...inputDarkSx }}
               />
 
-              {/* Time Criticality */}
               <TextField
                 label="Time Crit."
                 type="number"
@@ -111,7 +128,6 @@ export default function PrioritizationAssistant() {
                 sx={{ width: 110, ...inputDarkSx }}
               />
 
-              {/* Risk Reduction */}
               <TextField
                 label="Risk Red."
                 type="number"
@@ -120,7 +136,6 @@ export default function PrioritizationAssistant() {
                 sx={{ width: 110, ...inputDarkSx }}
               />
 
-              {/* Effort */}
               <TextField
                 label="Effort"
                 type="number"
@@ -141,6 +156,8 @@ export default function PrioritizationAssistant() {
             fullWidth
             sx={{
               mt: 2,
+              py: 1.2,
+              fontSize: "1rem",
               backgroundColor: "#238636",
               fontWeight: 700,
               "&:hover": { backgroundColor: "#2ea043" },
@@ -150,37 +167,41 @@ export default function PrioritizationAssistant() {
           </Button>
         </form>
 
+        {/* Results */}
         {prioritized.length > 0 && (
-          <Box mt={3}>
-            <Typography variant="subtitle1" fontWeight="bold" mb={1} sx={{ color: "#E6EDF3" }}>
-              Prioritized Tasks:
+          <Box mt={4}>
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+              mb={2}
+              sx={{ color: "#E6EDF3", borderBottom: "1px solid #444", pb: 0.5 }}
+            >
+              Prioritized Tasks
             </Typography>
-            <List>
-              {prioritized.map((t, i) => (
-                <ListItem
-                  key={i}
-                  sx={{ backgroundColor: "#0D1117", borderRadius: 1, mb: 1, color: "#E6EDF3" }}
-                >
-                  {i + 1}. {t}
-                </ListItem>
-              ))}
-            </List>
 
-            <Typography variant="subtitle1" fontWeight="bold" mt={2} mb={1} sx={{ color: "#E6EDF3" }}>
-              WSJF Scores:
-            </Typography>
             <List>
               {scores.map((s, i) => (
                 <ListItem
                   key={i}
-                  sx={{ backgroundColor: "#0D1117", borderRadius: 1, mb: 1, color: "#E6EDF3" }}
+                  sx={{
+                    backgroundColor: "#0D1117",
+                    borderRadius: 2,
+                    mb: 2,
+                    p: 2,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
                 >
-                  <Stack direction="row" justifyContent="space-between" width="100%">
-                    <Typography sx={{ color: "#E6EDF3" }}>{s.title}</Typography>
-                    <Typography fontWeight="bold" sx={{ color: "#FFD700" }}>
-                      {s.wsjf}
+                  <Box>
+                    <Typography fontWeight="bold" sx={{ color: "#E6EDF3" }}>
+                      {i + 1}. {s.title}
                     </Typography>
-                  </Stack>
+                    <Typography variant="body2" sx={{ color: "#bbb" }}>
+                      WSJF Score: <span style={{ color: "#FFD700" }}>{s.wsjf}</span>
+                    </Typography>
+                  </Box>
+                  {getPriorityLabel(s.wsjf)}
                 </ListItem>
               ))}
             </List>
